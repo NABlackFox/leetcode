@@ -6,6 +6,7 @@ You may assume the two numbers do not contain any leading zero, except the numbe
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 // Definition for singly-linked list.
 struct ListNode {
@@ -21,42 +22,110 @@ struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2){
         return l1;
     }
 
-    // travel and calculate the first number
     int firstNum = 0;
-    struct ListNode* head = l1;
-    
-    while (head != NULL){
-        firstNum = (head->val + 10 * firstNum);
-    }
-    
-    // second list
     int secondNum = 0;
-    head = l2;
-    
-    while (head != NULL){
-        secondNum = (head->val + 10 * secondNum);
+    int multiplier = 1;
+
+    struct ListNode* head1 = l1;
+    struct ListNode* head2 = l2;
+
+    // Get the number
+    while (head1 != NULL && head2 != NULL){
+        firstNum += head1->val * multiplier;
+        secondNum += head2->val * multiplier;
+
+        multiplier *= 10;
+
+        // Advance the heads
+
+        if (head1 != NULL && head2 != NULL){
+            head1 = head1->next;
+            head2 = head2->next;
+
+            continue;
+        }
+
+        if (head1 == NULL){
+            head2 = head2->next;
+        } else if (head2 == NULL){
+            head1 = head1->next;
+        }
+        
+      
+       
     }
 
-    int sumOfTwo = firstNum + secondNum;
-
-    // construct a result
-    struct ListNode result;
-    head = &result;
-
-    while (sumOfTwo > 0){
-        struct ListNode temp;
-        temp.val = sumOfTwo % 10;
-        temp.next = NULL;
-
-        head->next = &temp;
-        head = head->next;
-
-        sumOfTwo / 10;
-    }
+    int sum = firstNum + secondNum;
     
-    return &result;
+    // convert to a list
+    struct ListNode* result = (struct ListNode*)malloc(sizeof(struct ListNode));
+    result->val = sum % 10;
+    sum /= 10;
+    struct ListNode* head3 = result;
+
+    while (sum != 0) {
+        struct ListNode* node = (struct ListNode*)malloc(sizeof(struct ListNode));
+        node->val = sum % 10; 
+        sum /= 10;
+
+        head3->next = node;
+        head3 = head3->next;
+    }
+
+    head3->next = NULL;
+    return result;
 }
 
 int main(){
+// Create the first linked list for 9999999 (9 -> 9 -> 9 -> 9 -> 9 -> 9 -> 9)
+    struct ListNode* l1 = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l1->val = 9;
+    l1->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l1->next->val = 9;
+    l1->next->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l1->next->next->val = 9;
+    l1->next->next->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l1->next->next->next->val = 9;
+    l1->next->next->next->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l1->next->next->next->next->val = 9;
+    l1->next->next->next->next->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l1->next->next->next->next->next->val = 9;
+    l1->next->next->next->next->next->next = NULL;
+
+    // Create the second linked list for 9999 (9 -> 9 -> 9 -> 9)
+    struct ListNode* l2 = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l2->val = 9;
+    l2->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l2->next->val = 9;
+    l2->next->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l2->next->next->val = 9;
+    l2->next->next->next = (struct ListNode*)malloc(sizeof(struct ListNode));
+    l2->next->next->next->val = 9;
+    l2->next->next->next->next = NULL;
+
+    // Call the addTwoNumbers function to get the result
+    struct ListNode* result = addTwoNumbers(l1, l2);
+
+    // Print the result list
+    while (result != NULL) {
+        printf("%d -> ", result->val);
+        result = result->next;
+    }
+    printf("NULL\n");
+
+    // Free the allocated memory (for both lists)
+    free(l1->next->next->next->next->next->next);
+    free(l1->next->next->next->next->next);
+    free(l1->next->next->next->next);
+    free(l1->next->next->next);
+    free(l1->next->next);
+    free(l1->next);
+    free(l1);
+    
+    free(l2->next->next->next);
+    free(l2->next->next);
+    free(l2->next);
+    free(l2);
+
     return 0;
 }
